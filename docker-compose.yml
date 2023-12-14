@@ -1,0 +1,25 @@
+version: '3'
+services:
+  # PostgreSQL service
+  postgresql:
+    image: postgres:latest
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+
+  # Rails application service
+  web:
+    build: .
+    command: bash -c "rm -f tmp/pids/server.pid && rails server -b '0.0.0.0'"
+    volumes:
+      - .:/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgresql
+
+volumes:
+  postgres_data:
