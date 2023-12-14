@@ -1,0 +1,19 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: clone-build-push-
+spec:
+  pipelineRef:
+    name: clone-build-push
+  params:
+  - name: buildRevision
+    value: 'docker'
+  - name: appGitUrl
+    value: 'https://github.com/kowshikdiamond/ruby-rails-application.git'  
+  - name: appImage
+    value: 'diamond0816/myimages'
+  workspaces:
+  - name: app-source
+    emptyDir: {}
+  - name: config-source
+    emptyDir: {} 

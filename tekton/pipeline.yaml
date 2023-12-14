@@ -1,0 +1,30 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: clone-build-push
+spec:
+  params:
+  - name: buildRevision
+    description: Branch Name
+  - name: appGitUrl
+    description: The application repository
+  - name: appImage
+    description: The application Docker image name
+  workspaces:
+  - name: app-source
+  - name: config-source
+
+  tasks:
+  - name: clone-build-push
+    taskRef:
+      name: clone-build-push
+    params:
+    - name: buildRevision
+      value: $(params.buildRevision)
+    - name: appGitUrl
+      value: $(params.appGitUrl)
+    - name: appImage
+      value: $(params.appImage)
+    workspaces:
+    - name: app-source
+      workspace: app-source

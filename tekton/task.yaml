@@ -1,0 +1,36 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: clone-build-push
+spec:
+  params:
+  - name: appGitUrl
+  - name: appImage
+  - name: buildRevision
+  workspaces:
+  - name: app-source
+
+  steps:
+  - name: git-checkout
+    image: alpine/git:v2.26.2
+    workingDir: "$(workspaces.app-source.path)"
+    script: |
+      
+      git clone $(params.appGitUrl) -b $(params.buildRevision) .
+
+  - name: kaniko-build-push
+    image: gcr.io/kaniko-project/executor:latest
+    workingDir: "$(workspaces.app-source.path)"
+    args:
+    - "--context=git://github.com/kowshikdiamond/ruby-rails-application"
+    - "--destination=diamond0816/myimages:2.0"
+    volumeMounts:
+    - name: kaniko-secret
+      mountPath: /kaniko/.docker
+  volumes:
+  - name: kaniko-secret
+    secret:
+      secretName: dockercred
+      items:
+      - key: .dockerconfigjson
+        path: config.json
